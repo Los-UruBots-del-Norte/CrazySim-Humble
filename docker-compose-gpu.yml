@@ -1,0 +1,22 @@
+services:
+  crazysim-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crazysim-sim-gpu
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/.Xauthority:/root/.Xauthority
+    env_file:
+      - .env
+    environment:
+      - DISPLAY=$DISPLAY
+      - LIBGL_ALWAYS_SOFTWARE=1 
+    command: bash -c 'cd /home/ubuntu/ros_ws/src/CrazySim/crazyflie-firmware && bash tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n 9 -m crazyflie'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
